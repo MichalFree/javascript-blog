@@ -53,6 +53,7 @@ const optArticleSelector = '.post';
 const optTitleSelector = '.post-title';
 const optTitleListSelector = '.titles';
 const optArticleTagsSelector = '.post-tags .list';
+const optArticleAuthorSelector = '.post-author';
 
 function generateTitleLinks(customSelector = ''){
 
@@ -199,7 +200,7 @@ function addClickListenersToTags() {
 
   /* find all links to tags */
 
-  const allLinksToTags = document.querySelectorAll('a.active[href^="#tag-"]');
+  const allLinksToTags = document.querySelectorAll('a[href^="#tag-"]');
 
   /* START LOOP: for each link */
 
@@ -215,6 +216,67 @@ function addClickListenersToTags() {
 
 }
 
-addClickListenersToTags();
-generateTags();
+function generateAuthors() {
+
+  const articles = document.querySelectorAll(optArticleSelector);
+
+  for (let article of articles) {
+
+  const titleList = article.querySelector(optArticleAuthorSelector);
+
+  let html = '';
+
+  const authorTags = article.getAttribute('data-author');
+
+  const authorLinkHTML = '<span>by </span><a href="#-author' + authorTags + '"><span>' + authorTags + '</span></a>';
+
+  html += authorLinkHTML;
+
+  titleList.innerHTML = titleList.innerHTML + authorLinkHTML;
+
+    }
+  }
+
+  const authorClickHandler = function (event) {
+
+    event.preventDefault();
+
+    const clickedElement = this;
+
+    const href = clickedElement.getAttribute('href');
+
+    const tag = href.replace('#-author', '');
+
+    const authorLinks = document.querySelectorAll('a.active[href^="#-author"]');
+
+    for (let authorLink of authorLinks) {
+        authorLink.classList.remove('active');
+      }
+
+      const authorLinksHref = document.querySelectorAll('a[href="' + href + '"]');
+
+      for (let authorLinkHref of authorLinksHref) {
+        authorLinkHref.classList.add('active');
+      }
+
+      generateTitleLinks('[data-author="' + tag + '"]');
+
+    }
+
+    function addClickListenersToAuthors() {
+
+      const allLinksToAuthors = document.querySelectorAll('a[href^="#-author"]');
+
+      for (let link of allLinksToAuthors) {
+
+        link.addEventListener('click', authorClickHandler);
+
+      }
+    }
+
+
 generateTitleLinks();
+generateTags();
+addClickListenersToTags();
+generateAuthors();
+addClickListenersToAuthors();
